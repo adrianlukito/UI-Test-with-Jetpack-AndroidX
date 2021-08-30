@@ -35,6 +35,7 @@ class ListFragmentIntegrationTests: BaseMainActivityTests() {
     @Test
     fun isBlogListEmpty() {
 
+        // setup
         val app = InstrumentationRegistry
             .getInstrumentation()
             .targetContext
@@ -51,6 +52,7 @@ class ListFragmentIntegrationTests: BaseMainActivityTests() {
 
         injectTest(app)
 
+        // run test
         val scenario = launchActivity<MainActivity>()
 
         val recyclerView = onView(withId(R.id.recycler_view))
