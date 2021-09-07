@@ -10,7 +10,9 @@ import com.codingwithmitch.espressodaggerexamples.R
 import com.codingwithmitch.espressodaggerexamples.TestBaseApplication
 import com.codingwithmitch.espressodaggerexamples.di.TestAppComponent
 import com.codingwithmitch.espressodaggerexamples.util.Constants
+import com.codingwithmitch.espressodaggerexamples.util.Constants.BLOG_POSTS_DATA_FILENAME
 import com.codingwithmitch.espressodaggerexamples.util.Constants.CATEGORIES_DATA_FILENAME
+import com.codingwithmitch.espressodaggerexamples.util.Constants.NETWORK_ERROR_TIMEOUT
 import com.codingwithmitch.espressodaggerexamples.util.Constants.SERVER_ERROR_FILENAME
 import com.codingwithmitch.espressodaggerexamples.util.Constants.UNKNOWN_ERROR
 import com.codingwithmitch.espressodaggerexamples.util.EspressoIdlingResourceRule
@@ -54,6 +56,35 @@ class ListFragmentErrorTests: BaseMainActivityTests() {
             .check(matches(isDisplayed()))
 
         onView(withSubstring(UNKNOWN_ERROR))
+            .check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun doesNetworkTimeout_networkTimeoutError() {
+
+        // setup
+        val app = InstrumentationRegistry
+            .getInstrumentation()
+            .targetContext
+            .applicationContext as TestBaseApplication
+
+        val apiService = configureFakeApiService(
+            blogsDataSource = BLOG_POSTS_DATA_FILENAME, // empty list of data
+            categoriesDataSource = CATEGORIES_DATA_FILENAME,
+            networkDelay = 4000L,
+            application = app
+        )
+
+        configureFakeRepository(apiService, app)
+
+        injectTest(app)
+
+        val scenario = launchActivity<MainActivity>()
+
+        onView(withText(R.string.text_error))
+            .check(matches(isDisplayed()))
+
+        onView(withSubstring(NETWORK_ERROR_TIMEOUT))
             .check(matches(isDisplayed()))
     }
 
